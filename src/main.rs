@@ -1,3 +1,6 @@
+
+
+
 fn variable_scope(){
     /*
     {                      // "s" is not valid here, it’s not yet declared
@@ -90,22 +93,108 @@ fn takes_and_gives_back(a_string: String) -> String{ // a_string comes into scop
 fn return_values_and_scope_2(){
     let s1 = String::from("hello");
 
-    let (s2, len) = caluculate_length(s1);
+    let (s2, len) = caluculate_length_1(s1);
 
     println!("The length of '{}' is {}.", s2, len);
 }
 
-fn caluculate_length(s: String) -> (String, usize){
+fn caluculate_length_1(s: String) -> (String, usize){
     let length = s.len();
 
     (s, length)
 }
 
+fn references_and_borrowing(){
+    let s1 = String::from("hello");
+
+    let len = caluculate_length_2(&s1);
+
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn caluculate_length_2(s: &String) -> usize { // s is a reference to a String
+    s.len()
+}   // Here, s goes out of scope. But because it does not have ownership of 
+    // what it refers to, nothing happens.
+
+fn mutable_references(){
+    let mut s = String::from("hello");
+
+    change_s(&mut s);
+
+    println!("{}", s);
+}
+
+fn change_s(some_string: &mut String){ // &mut String change &String, which has error.
+    some_string.push_str(", world!");
+}
+
+fn dangling_references(){
+    /*
+    ## Bad Example ##
+    ## this function's return type contains a borrowed value, but there is no   ##
+    ## value for it to be borrowed from                                         ##
+    fn main(){
+        let reference_to_nothing = dangle();
+    }
+
+    fn dangle() -> &String {            // dangle retruns a reference to String
+        let s = String::from("hello");  // s is new String
+
+        &s                              // Return a reference to String s 
+    }   // Here, s goes out of scope, and is dropped. Its memory goes away. Danger.
+    */
+
+    let references_to_nothing = no_dangle();
+
+    println!("{}", references_to_nothing);
+}
+
+fn no_dangle() -> String{
+    let s = String::from("hello");
+    
+    s
+}
+
+fn the_slice_type(){
+    let mut s = String::from("hello world!");
+
+    let word = first_word(&s);  // word will get the value 5.
+
+    println!("{}", word); 
+    s.clear();                  // this empties the String, making it equal to "".
+    /*
+    ## "word" still has the value 5 here, but there's no more string that           ##
+    ## we could meaningfuly use the value 5 with. "word" is now totally invalid!    ##
+    */
+}
+
+fn first_word(s: &String) -> usize {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return i;
+        }
+    }
+
+    s.len()
+}
+
+
+
 fn main() {
+    // 4.1
     variable_scope();
     string_type();
     memory_and_allocation();
     ownership_and_function();
     return_values_and_scope_1();
     return_values_and_scope_2();
+    // 4.2
+    references_and_borrowing();
+    mutable_references();
+    dangling_references();
+    // 4.3
+    the_slice_type();
 }
