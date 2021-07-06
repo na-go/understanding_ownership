@@ -181,7 +181,48 @@ fn first_word(s: &String) -> usize {
     s.len()
 }
 
+fn string_slices_1(){
+    let s = String::from("hello world");
 
+    let firstword = first_word_2(&s);
+    println!("{}", firstword);
+}
+
+fn first_word_2(s: &String) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+
+    &s[..]
+}
+
+fn string_slices_2(){
+    let s = String::from("hello world suprise");
+
+    let secondword = second_word(&s);
+    println!("secondword:{}", secondword);
+}
+
+fn second_word(s: &String) -> &str {
+    let bytes = s.as_bytes();
+    let mut first_number = 0;
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' && first_number == 0 {
+            first_number = i;
+        }
+        
+        if item == b' ' && first_number != 0 && first_number != i{
+            return &s[first_number..i]
+        }
+        
+    }
+    &s[first_number..]
+}
 
 fn main() {
     // 4.1
@@ -197,4 +238,6 @@ fn main() {
     dangling_references();
     // 4.3
     the_slice_type();
+    string_slices_1();
+    string_slices_2();
 }
