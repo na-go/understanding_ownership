@@ -1,6 +1,4 @@
 
-
-
 fn variable_scope(){
     /*
     {                      // "s" is not valid here, it’s not yet declared
@@ -104,6 +102,7 @@ fn caluculate_length_1(s: String) -> (String, usize){
     (s, length)
 }
 
+// 4.2 after here 
 fn references_and_borrowing(){
     let s1 = String::from("hello");
 
@@ -156,6 +155,7 @@ fn no_dangle() -> String{
     s
 }
 
+// 4.3 after here
 fn the_slice_type(){
     let mut s = String::from("hello world!");
 
@@ -224,6 +224,45 @@ fn second_word(s: &String) -> &str {
     &s[first_number..]
 }
 
+
+fn string_slices_as_parameters() {
+    let my_string = String::from("hello world");
+
+    // first_word works on slices of `String`s
+    let word = first_word_3(&my_string[..]);
+    println!("word1:{}", word);
+
+    let my_string_literal = "hello world";
+
+    // first_word works on slices of string literals
+    let word = first_word_3(&my_string_literal[..]);
+    println!("word2:{}", word);
+
+    // Because string literals *are* string slices already,
+    // this works too, without the slice syntax!
+    let word = first_word_3(my_string_literal);
+    println!("word3:{}", word);
+}
+
+fn first_word_3(s: &str) -> &str {
+    
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+
+    &s[..]
+}
+
+fn other_slices() {
+    let a = [1,2,3,4,5];
+    let slice_a = &a[1..3];
+    println!("a:{}, slice_a:{}", a[0], slice_a[0]);
+}
+
 fn main() {
     // 4.1
     variable_scope();
@@ -240,4 +279,6 @@ fn main() {
     the_slice_type();
     string_slices_1();
     string_slices_2();
+    string_slices_as_parameters();
+    other_slices();
 }
